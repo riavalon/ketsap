@@ -6,20 +6,25 @@ import KetsapProgressBar from './components/progressBar'
 import KetsapTaskTimer from './components/taskTimer'
 import KetsapTimerTaskList from './components/timerTaskList'
 
-const Timer = () => (
-  <View style={styles.container}>
+import PomoTimer from './timer'
 
-    <View style={styles.taskName}>
-      <Text style={globalStyles.h2}>
-        Ticket MM293
-      </Text>
+const Timer = () => {
+  const timer = new PomoTimer().add(25, 'minutes').add(30, 'minutes')
+  return (
+    <View style={styles.container}>
+
+      <View style={styles.taskName}>
+        <Text style={globalStyles.h2}>
+          Ticket MM293 ({timer.timeRemaining})
+        </Text>
+      </View>
+
+      <KetsapProgressBar />
+      <KetsapTaskTimer />
+      <KetsapTimerTaskList />
     </View>
-
-    <KetsapProgressBar />
-    <KetsapTaskTimer />
-    <KetsapTimerTaskList />
-  </View>
-)
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
