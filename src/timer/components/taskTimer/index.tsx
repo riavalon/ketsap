@@ -10,9 +10,10 @@ const defaultTime = 10
 
 const TaskTimer = () => {
   const [isWorking, setIsWorking] = useState(true)
-  const [startTime, setStart] = useState(false)
-  const [timeRemaining, setTimeRemaining] = useState(defaultTime)
+  const [isTimerStarted, setIsTimerStarted] = useState(false)
+  const [timeElapsed, setTimeElapsed] = useState(0)
   const [fmtTime, setFmtTime] = useState('00:10')
+
   const sub = new Rx.Subscription()
   const subject = new Rx.Subject()
 
@@ -23,48 +24,50 @@ const TaskTimer = () => {
   }
 
   const handleStop = () => {
-    setStart(false)
-    setTimeRemaining(defaultTime)
-    formatTimeRemaining(defaultTime)
+    setIsTimerStarted(false)
+    setTimeElapsed(0);
+    formatTimeRemaining(0)
+    alert('END')
     subject.next()
   }
 
   useEffect(() => {
-    if (startTime) {
+    if (isTimerStarted) {
       sub.add(
         Rx.interval(1000)
-        .pipe(
-          takeUntil(subject)
-        )
-        .subscribe(() => {
-          const newTime = timeRemaining - 1
-          if (newTime === 0) {
-            return handleStop()
-          }
-          setTimeRemaining(newTime)
-          const minutes = Math.floor(newTime / 60).toString().padStart(2, '0')
-          const seconds = (newTime % 60).toString().padStart(2, '0')
-          setFmtTime(`${minutes}:${seconds}`)
-        })
+          .pipe(
+            takeUntil(subject)
+          )
+          .subscribe(() => {
+            const timeRemaining = defaultTime - timeElapsed
+            if (timeRemaining === 0) {
+              return handleStop()
+            }
+            setTimeElapsed(timeElapsed + 1)
+
+            const minutes = Math.floor(timeRemaining / 60).toString().padStart(2, '0')
+            const seconds = (timeRemaining % 60).toString().padStart(2, '0')
+            setFmtTime(`${minutes}:${seconds}`)
+          })
       )
 
       return () => {
         if (sub) {
-          sub.unsubscribe
+          sub.unsubscribe()
         }
       }
     }
-  }, [startTime, timeRemaining])
+  }, [isTimerStarted, timeElapsed])
 
 
   return (
     <View style={styles.timer}>
       <Text style={styles.timerText}>{fmtTime}</Text>
       <Text style={[globalStyles.h4, styles.currentTimerState]}>
-        { isWorking ? 'Working' : 'Break' }
+        {isWorking ? 'Working' : 'Break'}
       </Text>
       <View style={styles.timerControls}>
-        <TouchableHighlight style={styles.timerControlsButton} onPress={() => setStart(true)}>
+        <TouchableHighlight style={styles.timerControlsButton} onPress={() => setIsTimerStarted(true)}>
           <Text>Start</Text>
         </TouchableHighlight>
         <TouchableHighlight style={styles.timerControlsButton} onPress={handleStop}>
@@ -76,10 +79,10 @@ const TaskTimer = () => {
           <Text style={styles.longBreakButtonText}>long break</Text>
         </TouchableHighlight>
       ) : (
-        <TouchableHighlight style={styles.longBreak} onPress={() => setIsWorking(true)}>
-          <Text style={styles.longBreakButtonText}>Next Pomodoro</Text>
-        </TouchableHighlight>
-      )}
+          <TouchableHighlight style={styles.longBreak} onPress={() => setIsWorking(true)}>
+            <Text style={styles.longBreakButtonText}>Next Pomodoro</Text>
+          </TouchableHighlight>
+        )}
     </View>
   )
 }
@@ -112,7 +115,7 @@ const styles = StyleSheet.create({
   longBreak: {
     width: '100%',
     height: 50,
-    display:'flex',
+    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f9427f',
