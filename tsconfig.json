@@ -6,7 +6,8 @@
     "moduleResolution": "node",
     "noEmit": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "target": "es5",
   },
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

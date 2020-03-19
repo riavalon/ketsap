@@ -1,21 +1,19 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 
 import globalStyles from '../shared/globalStyles'
 import KetsapProgressBar from './components/progressBar'
 import KetsapTaskTimer from './components/taskTimer'
 import KetsapTimerTaskList from './components/timerTaskList'
-
 import PomoTimer from './timer'
 
 const Timer = () => {
-  const timer = new PomoTimer().add(25, 'minutes').add(30, 'minutes')
   return (
     <View style={styles.container}>
 
       <View style={styles.taskName}>
         <Text style={globalStyles.h2}>
-          Ticket MM293 ({timer.timeRemaining})
+          Ticket MM293
         </Text>
       </View>
 
